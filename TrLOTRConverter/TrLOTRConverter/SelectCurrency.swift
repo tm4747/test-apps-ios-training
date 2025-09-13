@@ -28,8 +28,8 @@ struct SelectCurrency: View {
                     GridItem(),
                     GridItem()
                 ]){
-                    ForEach(0..<5){i in
-                        CurrencyIcon(currencyImage: .copperpenny, text: "Copper Penny\(i)")
+                    ForEach(Currency.allCases){currency in
+                        CurrencyIcon(currencyImage: currency.image, text: currency.name)
                     }
                 }
                 
