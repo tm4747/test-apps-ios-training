@@ -6,16 +6,25 @@
 //
 
 import SwiftUI
+import TipKit
 
 struct ContentView: View {
     @State var showExchangeInfo = false
     @State var showSelectCurrency = false
 
-    @State var currencyAmountLeft = ""
-    @State var currencyAmountRight = ""
+    @State var leftAmount = ""
+    @State var rightAmount = ""
     // both of the following work with different syntax
     @State var leftCurrency = Currency.silverPiece
     @State var rightCurrency: Currency = .goldPiece
+    
+    @FocusState private var focusedField: Field?
+    
+    let currencyTip = CurrencyTip()
+    
+    enum Field {
+        case left, right
+    }
     
     var body: some View {
         ZStack {
@@ -53,11 +62,14 @@ struct ContentView: View {
                         .padding(.bottom, -5)
                         .onTapGesture {
                             showSelectCurrency.toggle()
+                            currencyTip.invalidate(reason: .actionPerformed)
                         }
+                        .popoverTip(currencyTip, arrowEdge: .bottom)
                         
-                        // text field
-                        TextField("Amount", text: $currencyAmountLeft)
+                        // Left text field
+                        TextField("Amount", text: $leftAmount)
                             .textFieldStyle(.roundedBorder)
+                            .focused($focusedField, equals: .left)
                     }
                     // = sign
                     Image(systemName: "equal")
@@ -82,17 +94,20 @@ struct ContentView: View {
                         .padding(.bottom, -5)
                         .onTapGesture {
                             showSelectCurrency.toggle()
+                            currencyTip.invalidate(reason: .actionPerformed)
                         }
                         
-                        // text field
-                        TextField("Amount", text: $currencyAmountRight)
+                        // Right text field
+                        TextField("Amount", text: $rightAmount)
                             .textFieldStyle(.roundedBorder)
                             .multilineTextAlignment(.trailing)
+                            .focused($focusedField, equals: .right)
                     }
                 }
                 .padding()
                 .background(.black.opacity(0.5))
                 .clipShape(.capsule)
+                .keyboardType(.decimalPad)
                 
                 Spacer()
                 HStack {
@@ -110,6 +125,25 @@ struct ContentView: View {
                     .padding(.trailing)
                 }
             }
+        }
+        .task {
+            try? Tips.configure()
+        }
+        .onChange(of: leftAmount){
+            if focusedField == .left {
+                rightAmount = leftCurrency.convert(leftAmount, to: rightCurrency)
+            }
+        }
+        .onChange(of: rightAmount){
+            if focusedField == .right {
+                leftAmount = rightCurrency.convert( rightAmount, to: leftCurrency)
+            }
+        }
+        .onChange(of: leftCurrency){
+            leftAmount = rightCurrency.convert( rightAmount, to: leftCurrency)
+        }
+        .onChange(of: rightCurrency){
+            rightAmount = leftCurrency.convert(leftAmount, to: rightCurrency)
         }
         .sheet(isPresented: $showExchangeInfo){
             ExchangeInfo()

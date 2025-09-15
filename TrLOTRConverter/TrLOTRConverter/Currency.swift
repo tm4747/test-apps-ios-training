@@ -9,6 +9,7 @@ import SwiftUI
 
 enum Currency: Double, CaseIterable, Identifiable {
     
+//    case marble = 64000
     case copperPenny = 6400
     case silverPenny = 64
     case silverPiece = 16
@@ -19,6 +20,8 @@ enum Currency: Double, CaseIterable, Identifiable {
     
     var image: ImageResource {
         switch self {
+//        case .marble:
+//                .amarble
         case .copperPenny:
                 .copperpenny
         case .silverPenny:
@@ -34,6 +37,8 @@ enum Currency: Double, CaseIterable, Identifiable {
     
     var name: String {
         switch self {
+//        case .marble:
+//            "Marble"
         case .copperPenny:
             "Copper Penny"
         case .silverPenny:
@@ -45,5 +50,16 @@ enum Currency: Double, CaseIterable, Identifiable {
         case .goldPiece:
             "Gold Piece"
         }
+    }
+    
+    func convert(_ amountString: String, to currency: Currency) -> String{
+        guard let doubleAmount = Double(amountString) else {
+            return ""
+        }
+        
+        let convertedAmount = (doubleAmount / self.rawValue) * currency.rawValue
+        
+        return String(format: "%.2f", convertedAmount)
+        
     }
 }
