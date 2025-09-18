@@ -12,11 +12,13 @@ struct ContentView: View {
     @State var showExchangeInfo = false
     @State var showSelectCurrency = false
 
-    @State var leftAmount = ""
-    @State var rightAmount = ""
+    @AppStorage("leftAmount")  var leftAmount: String = ""
+    @AppStorage("rightAmount") var rightAmount: String = ""
+
     // both of the following work with different syntax
-    @State var leftCurrency = Currency.silverPiece
-    @State var rightCurrency: Currency = .goldPiece
+    @State var leftCurrency = Currency.load(forKey: "leftCurrency", default: .silverPiece)
+    @State var rightCurrency = Currency.load(forKey: "rightCurrency", default: .goldPiece)
+
     
     @FocusState private var focusedField: Field?
     
@@ -46,6 +48,7 @@ struct ContentView: View {
                 // conversion section
                 HStack {
                     // left conversion section
+//                    CurrencyToConvert(side: .right, currency: $rightCurrency, showSelectCurrency: $showSelectCurrency, amount: $rightAmount)
                     VStack {
                         // currency
                         HStack {
@@ -62,7 +65,7 @@ struct ContentView: View {
                         .padding(.bottom, -5)
                         .onTapGesture {
                             showSelectCurrency.toggle()
-                            currencyTip.invalidate(reason: .actionPerformed)
+//                            currencyTip.invalidate(reason: .actionPerformed)
                         }
                         .popoverTip(currencyTip, arrowEdge: .bottom)
                         
@@ -94,7 +97,7 @@ struct ContentView: View {
                         .padding(.bottom, -5)
                         .onTapGesture {
                             showSelectCurrency.toggle()
-                            currencyTip.invalidate(reason: .actionPerformed)
+//                            currencyTip.invalidate(reason: .actionPerformed)
                         }
                         
                         // Right text field
@@ -126,6 +129,9 @@ struct ContentView: View {
                 }
             }
         }
+        .onTapGesture {
+            focusedField = nil    // clears focus, hides keyboard
+        }
         .task {
             try? Tips.configure()
         }
@@ -141,9 +147,11 @@ struct ContentView: View {
         }
         .onChange(of: leftCurrency){
             leftAmount = rightCurrency.convert( rightAmount, to: leftCurrency)
+            leftCurrency.save(forKey: "leftCurrency")
         }
         .onChange(of: rightCurrency){
             rightAmount = leftCurrency.convert(leftAmount, to: rightCurrency)
+            rightCurrency.save(forKey: "rightCurrency")
         }
         .sheet(isPresented: $showExchangeInfo){
             ExchangeInfo()

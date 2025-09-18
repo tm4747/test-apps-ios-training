@@ -9,7 +9,7 @@ import SwiftUI
 
 enum Currency: Double, CaseIterable, Identifiable {
     
-//    case marble = 64000
+    case marble = 64000
     case copperPenny = 6400
     case silverPenny = 64
     case silverPiece = 16
@@ -20,8 +20,8 @@ enum Currency: Double, CaseIterable, Identifiable {
     
     var image: ImageResource {
         switch self {
-//        case .marble:
-//                .amarble
+        case .marble:
+                .amarble
         case .copperPenny:
                 .copperpenny
         case .silverPenny:
@@ -37,8 +37,8 @@ enum Currency: Double, CaseIterable, Identifiable {
     
     var name: String {
         switch self {
-//        case .marble:
-//            "Marble"
+        case .marble:
+            "Marble"
         case .copperPenny:
             "Copper Penny"
         case .silverPenny:
@@ -62,4 +62,17 @@ enum Currency: Double, CaseIterable, Identifiable {
         return String(format: "%.2f", convertedAmount)
         
     }
+    
+    // MARK: - Persistence Helpers
+      
+      /// Load a saved Currency from UserDefaults by key, falling back to a default
+      static func load(forKey key: String, default defaultValue: Currency) -> Currency {
+          let saved = UserDefaults.standard.string(forKey: key)
+          return Self.allCases.first(where: { $0.name == saved }) ?? defaultValue
+      }
+      
+      /// Save this Currency's name to UserDefaults
+      func save(forKey key: String) {
+          UserDefaults.standard.set(self.name, forKey: key)
+      }
 }
