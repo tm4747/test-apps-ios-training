@@ -129,7 +129,7 @@ struct ContentView: View {
     ContentView()
 }
 
-
+/** removes non-numeric characters and allows for one dot at most */
 func sanitizeNumber(_ input: String) -> String {
     var result = ""
     var seenDot = false
@@ -142,10 +142,7 @@ func sanitizeNumber(_ input: String) -> String {
                 seenDot = true
                 result.append(ch)
             }
-            // ignore additional dots
         }
-        // ignore everything else
     }
-    
     return result
 }

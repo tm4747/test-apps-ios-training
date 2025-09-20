@@ -58,6 +58,7 @@ struct CurrencyToConvert: View {
         .task {
             try? Tips.configure()
         }
+       
     }
 }
 
@@ -74,8 +75,9 @@ struct CurrencyToConvert: View {
         focusedField: FocusState<Side?>().projectedValue
     )
     .padding()
-    .background(.black)
-    .environment(\.colorScheme, .dark) 
+    .background(.black.opacity(0.5))
+    .clipShape(.capsule)
+    .keyboardType(.decimalPad)
 }
 
 extension View {
