@@ -12,9 +12,16 @@ enum Side: Hashable {
 }
 
 struct ContentView: View {
+    /**
+    @State is a SwiftUI property wrapper that tells SwiftUI to store the value in special view-owned storage.
+     When the value changes, SwiftUI invalidates the view’s body and recomputes it. This is what gives you “reactive” UI updates.
+     */
     @State var showExchangeInfo = false
     @State var showSelectCurrency = false
 
+    /**
+     @AppStorage - is basically a @State variable which saves to UserDefaults, which is a persistent key-value storage provided by Ios, and is therefore persistent between app loads. 
+     */
     @AppStorage("leftAmount")  var leftAmount: String = ""
     @AppStorage("rightAmount") var rightAmount: String = ""
 
@@ -45,6 +52,9 @@ struct ContentView: View {
                 // Conversion Section
                 HStack {
                     // left conversion section
+                    /**
+                     When variables are binding, a dollar side needs to preceed variable name.  This will allow the child component to modify it.  To just pass the value, just use variable name.
+                     */
                     CurrencyToConvert(
                         side: .left,
                         currency: $leftCurrency,

@@ -12,6 +12,11 @@ struct CurrencyToConvert: View {
     
     let side: Side
     let currencyTip = CurrencyTip()
+    
+    /**
+     @Binding - provides a reference to @State owned variable elsewhere (or similar (@AppStorage))
+     Allows for value to be changed in component and for its value to be passed up to the main @State or other variable in the Ancestor component.
+     */
     @Binding var currency: Currency
     @Binding var showSelectCurrency: Bool
     @Binding var amount: String
