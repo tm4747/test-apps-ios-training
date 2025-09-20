@@ -6,7 +6,10 @@
 //
 
 import SwiftUI
-import TipKit
+
+enum Side: Hashable {
+    case left, right
+}
 
 struct ContentView: View {
     @State var showExchangeInfo = false
@@ -20,14 +23,8 @@ struct ContentView: View {
     @State var rightCurrency = Currency.load(forKey: "rightCurrency", default: .goldPiece)
 
     
-    @FocusState private var focusedField: Field?
-    
-    let currencyTip = CurrencyTip()
-    
-    enum Field {
-        case left, right
-    }
-    
+    @FocusState private var focusedField: Side?
+        
     var body: some View {
         ZStack {
             // Background image
@@ -45,35 +42,17 @@ struct ContentView: View {
                     .font(.largeTitle)
                     .foregroundStyle(.white)
                 
-                // conversion section
+                // Conversion Section
                 HStack {
                     // left conversion section
-//                    CurrencyToConvert(side: .right, currency: $rightCurrency, showSelectCurrency: $showSelectCurrency, amount: $rightAmount)
-                    VStack {
-                        // currency
-                        HStack {
-                            // currency image
-                            Image(leftCurrency.image)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 33)
-                            // currency text
-                            Text(leftCurrency.name)
-                                .font(.headline)
-                                .foregroundStyle(.white)
-                        }
-                        .padding(.bottom, -5)
-                        .onTapGesture {
-                            showSelectCurrency.toggle()
-//                            currencyTip.invalidate(reason: .actionPerformed)
-                        }
-                        .popoverTip(currencyTip, arrowEdge: .bottom)
-                        
-                        // Left text field
-                        TextField("Amount", text: $leftAmount)
-                            .textFieldStyle(.roundedBorder)
-                            .focused($focusedField, equals: .left)
-                    }
+                    CurrencyToConvert(
+                        side: .left,
+                        currency: $leftCurrency,
+                        showSelectCurrency: $showSelectCurrency,
+                        amount: sanitized($leftAmount),
+                        focusedField: $focusedField
+                    )
+                    
                     // = sign
                     Image(systemName: "equal")
                         .font(.largeTitle)
@@ -81,41 +60,24 @@ struct ContentView: View {
                         .symbolEffect(.pulse)
                     
                     // right conversion section
-                    VStack {
-                        // currency
-                        HStack {
-                            // currency text
-                            Text(rightCurrency.name)
-                                .font(.headline)
-                                .foregroundStyle(.white)
-                            // currency image
-                            Image(rightCurrency.image)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 33)
-                        }
-                        .padding(.bottom, -5)
-                        .onTapGesture {
-                            showSelectCurrency.toggle()
-//                            currencyTip.invalidate(reason: .actionPerformed)
-                        }
-                        
-                        // Right text field
-                        TextField("Amount", text: $rightAmount)
-                            .textFieldStyle(.roundedBorder)
-                            .multilineTextAlignment(.trailing)
-                            .focused($focusedField, equals: .right)
-                    }
+                    CurrencyToConvert(
+                        side: .right,
+                        currency: $rightCurrency,
+                        showSelectCurrency: $showSelectCurrency,
+                        amount: sanitized($rightAmount),
+                        focusedField: $focusedField
+                    )
                 }
                 .padding()
                 .background(.black.opacity(0.5))
                 .clipShape(.capsule)
                 .keyboardType(.decimalPad)
-                
+        
                 Spacer()
                 HStack {
                     Spacer()
-                    // info button
+                    
+                    // Info Button
                     Button {
                         showExchangeInfo.toggle()
                         print("showExInfo val:  \(showExchangeInfo)")
@@ -132,17 +94,14 @@ struct ContentView: View {
         .onTapGesture {
             focusedField = nil    // clears focus, hides keyboard
         }
-        .task {
-            try? Tips.configure()
-        }
-        .onChange(of: leftAmount){
+        .onChange(of: leftAmount){ _, newVal in
             if focusedField == .left {
-                rightAmount = leftCurrency.convert(leftAmount, to: rightCurrency)
+                rightAmount = leftCurrency.convert(newVal, to: rightCurrency)
             }
         }
-        .onChange(of: rightAmount){
+        .onChange(of: rightAmount){ _, newVal in
             if focusedField == .right {
-                leftAmount = rightCurrency.convert( rightAmount, to: leftCurrency)
+                leftAmount = rightCurrency.convert( newVal, to: leftCurrency)
             }
         }
         .onChange(of: leftCurrency){
@@ -164,4 +123,32 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+}
+
+private func sanitized(_ source: Binding<String>) -> Binding<String> {
+    Binding(
+        get: { source.wrappedValue },
+        set: { source.wrappedValue = sanitizeNumber($0) }
+    )
+}
+
+
+func sanitizeNumber(_ input: String) -> String {
+    var result = ""
+    var seenDot = false
+    
+    for ch in input {
+        if ch.isNumber {
+            result.append(ch)
+        } else if ch == "." {
+            if !seenDot {
+                seenDot = true
+                result.append(ch)
+            }
+            // ignore additional dots
+        }
+        // ignore everything else
+    }
+    
+    return result
 }

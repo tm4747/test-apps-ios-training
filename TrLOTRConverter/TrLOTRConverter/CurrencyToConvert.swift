@@ -10,14 +10,13 @@ import TipKit
 
 struct CurrencyToConvert: View {
     
-    enum Side { case left, right}
-  
     let side: Side
     let currencyTip = CurrencyTip()
     @Binding var currency: Currency
     @Binding var showSelectCurrency: Bool
     @Binding var amount: String
-//    @Binding var focusedField: Field?
+    
+    var focusedField: FocusState<Side?>.Binding
 
     var body: some View {
         VStack {
@@ -46,24 +45,51 @@ struct CurrencyToConvert: View {
                 showSelectCurrency.toggle()
 //                currencyTip.invalidate(reason: .actionPerformed)
             }
-            .popoverTip(currencyTip, arrowEdge: .bottom)
+            .if(side == .right) { view in     // <— custom conditional modifier
+                view.popoverTip(currencyTip, arrowEdge: .bottom)
+            }
             
             // Left text field
             TextField("Amount", text: $amount)
                 .textFieldStyle(.roundedBorder)
                 .keyboardType(.decimalPad)
-//                .focused($focusedField, equals: .left)
+                .focused(focusedField, equals: side)
+        }
+        .task {
+            try? Tips.configure()
         }
     }
 }
 
-#Preview {
-//    @FocusState private var focusedField: Field?
-    @Previewable @State var currency: Currency = .silverPiece
-    @Previewable @State var showPicker: Bool = false
-    @Previewable @State var amount: String = "0.0"
-    CurrencyToConvert(side: .left, currency: $currency, showSelectCurrency: $showPicker, amount: $amount)
-        .task { try? Tips.configure() }
-            .padding()
-            .background(Color.black)
+//#Preview {
+////    @FocusState private var focusedField: Field?
+//    @Previewable @State var side: Side = .left
+//    @Previewable @State var currency = Currency.silverPiece
+//    @Previewable @State var showPicker: Bool = false
+//    @Previewable @State var amount: String = "0.0"
+//    @Previewable @FocusState var focusedField: Side?   // <- lives in a View
+//
+//    
+//    CurrencyToConvert(
+//        side: $side,
+//        currency: $currency,
+//        showSelectCurrency: $showPicker,
+//        amount: $amount,
+//        focusedField: $focusedField
+//    )
+//        .task { try? Tips.configure() }
+//            .padding()
+//            .background(Color.black)
+//}
+
+extension View {
+    @ViewBuilder
+    func `if`<Content: View>(_ condition: Bool,
+                             transform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
 }
