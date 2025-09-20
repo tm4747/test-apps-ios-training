@@ -49,7 +49,7 @@ struct ContentView: View {
                         side: .left,
                         currency: $leftCurrency,
                         showSelectCurrency: $showSelectCurrency,
-                        amount: sanitized($leftAmount),
+                        amount: $leftAmount,
                         focusedField: $focusedField
                     )
                     
@@ -64,7 +64,7 @@ struct ContentView: View {
                         side: .right,
                         currency: $rightCurrency,
                         showSelectCurrency: $showSelectCurrency,
-                        amount: sanitized($rightAmount),
+                        amount: $rightAmount,
                         focusedField: $focusedField
                     )
                 }
@@ -95,13 +95,17 @@ struct ContentView: View {
             focusedField = nil    // clears focus, hides keyboard
         }
         .onChange(of: leftAmount){ _, newVal in
+            let sanitizedAmount = sanitizeNumber(newVal)
+            leftAmount = sanitizedAmount
             if focusedField == .left {
-                rightAmount = leftCurrency.convert(newVal, to: rightCurrency)
+                rightAmount = leftCurrency.convert(sanitizedAmount, to: rightCurrency)
             }
         }
         .onChange(of: rightAmount){ _, newVal in
+            let sanitizedAmount = sanitizeNumber(newVal)
+            rightAmount = sanitizedAmount
             if focusedField == .right {
-                leftAmount = rightCurrency.convert( newVal, to: leftCurrency)
+                leftAmount = rightCurrency.convert( sanitizedAmount, to: leftCurrency)
             }
         }
         .onChange(of: leftCurrency){
@@ -123,13 +127,6 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-}
-
-private func sanitized(_ source: Binding<String>) -> Binding<String> {
-    Binding(
-        get: { source.wrappedValue },
-        set: { source.wrappedValue = sanitizeNumber($0) }
-    )
 }
 
 

@@ -61,26 +61,22 @@ struct CurrencyToConvert: View {
     }
 }
 
-//#Preview {
-////    @FocusState private var focusedField: Field?
-//    @Previewable @State var side: Side = .left
-//    @Previewable @State var currency = Currency.silverPiece
-//    @Previewable @State var showPicker: Bool = false
-//    @Previewable @State var amount: String = "0.0"
-//    @Previewable @FocusState var focusedField: Side?   // <- lives in a View
-//
-//    
-//    CurrencyToConvert(
-//        side: $side,
-//        currency: $currency,
-//        showSelectCurrency: $showPicker,
-//        amount: $amount,
-//        focusedField: $focusedField
-//    )
-//        .task { try? Tips.configure() }
-//            .padding()
-//            .background(Color.black)
-//}
+
+#Preview {
+    @Previewable @State var currency = Currency.silverPiece
+    @Previewable @State var showSelectCurrency = false
+    @Previewable @State var amount = "0.0"
+    CurrencyToConvert(
+        side: .left,
+        currency: $currency,
+        showSelectCurrency: $showSelectCurrency,
+        amount: $amount,
+        focusedField: FocusState<Side?>().projectedValue
+    )
+    .padding()
+    .background(.black)
+    .environment(\.colorScheme, .dark) 
+}
 
 extension View {
     @ViewBuilder
