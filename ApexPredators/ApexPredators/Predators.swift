@@ -11,7 +11,9 @@ import Foundation
 import SwiftUI
 
 class Predators {
+    var allApexPredators: [ApexPredator] = []
     var apexPredators: [ApexPredator] = []
+
     
     init() {
         decodeApexPredatorData()
@@ -24,7 +26,8 @@ class Predators {
                 let data = try Data(contentsOf: url)
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
-                apexPredators = try decoder.decode([ApexPredator].self, from: data)
+                allApexPredators = try decoder.decode([ApexPredator].self, from: data)
+                apexPredators = allApexPredators
             } catch {
                 print("error decoding JSON data: \(error)")
             }
@@ -47,6 +50,16 @@ class Predators {
                 predator1.name < predator2.name
             } else {
                 predator1.id < predator2.id
+            }
+        }
+    }
+    
+    func filter(by type: APType){
+        if type == .all {
+            apexPredators = allApexPredators
+        } else {
+            apexPredators = allApexPredators.filter { predator in
+                predator.type == type
             }
         }
     }
