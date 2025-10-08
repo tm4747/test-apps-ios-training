@@ -19,8 +19,8 @@ struct ContentView: View {
     var filteredDinos: [ApexPredator] {
         
         predators.filter(by: selectedType)
-        predators.sort(by: alphabetical)
         predators.filter(by: selectedMovie)
+        predators.sort(by: alphabetical)
         return predators.search(for: searchText)
     }
     

@@ -13,6 +13,10 @@ import SwiftUI
 class Predators {
     var allApexPredators: [ApexPredator] = []
     var apexPredators: [ApexPredator] = []
+    
+    // Track both filter criteria
+   var selectedType: APType = .all
+   var selectedMovie: String? = nil
 
     var allMovies: [String] = []
     
@@ -61,28 +65,29 @@ class Predators {
         }
     }
     
-    func filter(by type: APType){
-        if type == .all {
-            apexPredators = allApexPredators
-        } else {
-            apexPredators = allApexPredators.filter { predator in
-                predator.type == type
-            }
-        }
-    }
-    
-    
-    func filter(by movie: String?) {
-        // If no movie is selected, show all predators
-        guard let movie = movie, !movie.isEmpty else {
-            apexPredators = allApexPredators
-            return
-        }
+    func applyFilters() {
+       apexPredators = allApexPredators.filter { predator in
+           // type filter
+           (selectedType == .all || predator.type == selectedType)
+           &&
+           // movie filter
+           (selectedMovie == nil ||
+            selectedMovie!.isEmpty ||
+            predator.movies.contains(where: {
+                $0.caseInsensitiveCompare(selectedMovie!) == .orderedSame
+            })
+           )
+       }
+   }
 
-        // Otherwise, filter by movie
-        apexPredators = allApexPredators.filter { predator in
-            predator.movies.contains(where: { $0.caseInsensitiveCompare(movie) == .orderedSame })
-        }
-    }
+   func filter(by type: APType) {
+       selectedType = type
+       applyFilters()
+   }
+
+   func filter(by movie: String?) {
+       selectedMovie = movie
+       applyFilters()
+   }
 
 }
