@@ -14,9 +14,11 @@ class Predators {
     var allApexPredators: [ApexPredator] = []
     var apexPredators: [ApexPredator] = []
 
+    var allMovies: [String] = []
     
     init() {
         decodeApexPredatorData()
+        collectAllMovies() // call after data is loaded
     }
     
     func decodeApexPredatorData() {
@@ -33,6 +35,11 @@ class Predators {
             }
         }
     }
+    // ✅ Collect all unique movie titles
+   private func collectAllMovies() {
+       let movies = allApexPredators.flatMap { $0.movies }
+       allMovies = Array(Set(movies)).sorted() // remove duplicates + sort
+   }
     
     func search(for searchTerm: String) -> [ApexPredator] {
         if searchTerm.isEmpty {
@@ -63,4 +70,19 @@ class Predators {
             }
         }
     }
+    
+    
+    func filter(by movie: String?) {
+        // If no movie is selected, show all predators
+        guard let movie = movie, !movie.isEmpty else {
+            apexPredators = allApexPredators
+            return
+        }
+
+        // Otherwise, filter by movie
+        apexPredators = allApexPredators.filter { predator in
+            predator.movies.contains(where: { $0.caseInsensitiveCompare(movie) == .orderedSame })
+        }
+    }
+
 }

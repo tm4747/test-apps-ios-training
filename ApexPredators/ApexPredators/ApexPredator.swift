@@ -8,6 +8,10 @@
 import SwiftUI
 import MapKit
 
+/*
+ Identifiable - one element can be distinguised from another via an id property
+ 
+ */
 struct ApexPredator: Decodable, Identifiable {
     let id: Int
     let name: String

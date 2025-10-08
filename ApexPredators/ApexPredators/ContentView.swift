@@ -10,15 +10,17 @@ import MapKit
 
 struct ContentView: View {
     let predators = Predators()
-    
+        
     @State var searchText = ""
     @State var alphabetical = false
-    @State var currentSelection = APType.all
-    
+    @State var selectedType = APType.all
+    @State var selectedMovie = nil as String?
+        
     var filteredDinos: [ApexPredator] {
         
-        predators.filter(by: currentSelection)
+        predators.filter(by: selectedType)
         predators.sort(by: alphabetical)
+        predators.filter(by: selectedMovie)
         return predators.search(for: searchText)
     }
     
@@ -73,7 +75,19 @@ struct ContentView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing){
                     Menu {
-                        Picker("Filter", selection: $currentSelection.animation()){
+                        Picker("Filter", selection: $selectedMovie.animation()){
+                            ForEach(predators.allMovies, id: \.self) { movie in
+                                Text(movie.capitalized)
+                                    .tag(Optional(movie))
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "slider.horizontal.3")
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing){
+                    Menu {
+                        Picker("Filter", selection: $selectedType.animation()){
                             ForEach(APType.allCases) {
                                 type in
                                 Label(type.rawValue.capitalized, systemImage: type.icon)
