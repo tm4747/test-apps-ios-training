@@ -17,9 +17,9 @@ struct ContentView: View {
     @State var selectedMovie = nil as String?
         
     var filteredDinos: [ApexPredator] {
-        
-        predators.filter(by: selectedType)
-        predators.filter(by: selectedMovie)
+        predators.selectedType = selectedType
+        predators.selectedMovie = selectedMovie
+        predators.applyFilters()
         predators.sort(by: alphabetical)
         return predators.search(for: searchText)
     }
@@ -53,7 +53,7 @@ struct ContentView: View {
                                 .padding(.vertical, 5)
                                 .background(predator.type.background)
                                 .clipShape(.capsule)
-
+                            
                         }
                     }
                 }

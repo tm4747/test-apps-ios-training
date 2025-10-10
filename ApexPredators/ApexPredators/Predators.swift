@@ -89,5 +89,16 @@ class Predators {
        selectedMovie = movie
        applyFilters()
    }
+    
+    func delete(_ predator: ApexPredator) {
+        // Remove from allApexPredators
+        allApexPredators.removeAll { $0.id == predator.id }
+
+        // Remove from current visible list
+        apexPredators.removeAll { $0.id == predator.id }
+
+        // Optional: Re-apply filters to keep view in sync
+        applyFilters()
+    }
 
 }
