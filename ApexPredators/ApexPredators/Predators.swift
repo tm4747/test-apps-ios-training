@@ -10,7 +10,7 @@
 import Foundation
 import SwiftUI
 
-class Predators {
+class Predators: ObservableObject {
     var allApexPredators: [ApexPredator] = []
     var apexPredators: [ApexPredator] = []
     
@@ -90,6 +90,23 @@ class Predators {
        applyFilters()
    }
     
+    /*
+     apexPredators.removeAll { $0.id == predator.id } - is shorthand for:
+     apexPredators.removeAll { (element) in
+        return element.id == predator.id
+     }
+     $0 stands for the current element being checked as removeAll loops through the array
+     expanded further:
+     for item in apexPredators {
+         if item.id == predator.id {
+             // remove it
+         }
+     }
+     NOTE: _ supresses the external name.  Each function parameter has an external and internal name.  External is used when you call the function.  Internal is used inside the function's body.
+     so, if it was func delete(predator: ApexPredator), you'd have to call it like:  delete(predator: somePredator)
+     but, if it as it is: func delete(_ predator: ApexPredator), you can call it more simply:  delete(somePredator)
+
+     */
     func delete(_ predator: ApexPredator) {
         // Remove from allApexPredators
         allApexPredators.removeAll { $0.id == predator.id }
