@@ -92,6 +92,8 @@ struct ContentView: View {
                 ToolbarItem(placement: .topBarTrailing){
                     Menu {
                         Picker("Filter", selection: $selectedMovie.animation()){
+                            Text("any")
+                                .tag(Optional("any"))
                             ForEach(predators.allMovies, id: \.self) { movie in
                                 Text(movie.capitalized)
                                     .tag(Optional(movie))

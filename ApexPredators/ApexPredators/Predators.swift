@@ -72,6 +72,7 @@ class Predators: ObservableObject {
            &&
            // movie filter
            (selectedMovie == nil ||
+            selectedMovie == "any" ||
             selectedMovie!.isEmpty ||
             predator.movies.contains(where: {
                 $0.caseInsensitiveCompare(selectedMovie!) == .orderedSame
