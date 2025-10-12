@@ -25,18 +25,70 @@ struct FetchService {
         // try to fetch data from url
         /* returns tuple containing both data and response objects
          func data( from url: URL, delegate: (any URLSessionTaskDelegate)? = nil ) async throws -> (Data, URLResponse)
-          Data - is the data returned.  URLResponse - is the url response code (200 etc...)
-         */
+          Data - is the data returned.  URLResponse - is the url response code (200 etc...)  */
         let (data, response) = try await URLSession.shared.data(from: fetchURL)
         
-        // handle response
-        // ??? WHAT IS HAPPENING HERE?
+        /* handle response - set response to response if the response is a HTTPURLResponse (which means we connected to a webserver) -> “Make sure that the response is an HTTPURLResponse and that its status code is 200. If not, stop execution and throw a badResponse error.” -> if either of the condition fails, the else block runs
+         guard -> ensures certain conditions are true before continuing
+            as? HTTPURLResponse -> means “try to cast this value to an HTTPURLResponse.” -> if the cast succeeds and statusCode is 200, we get a new HTTPURLResponse variable response  */
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
             throw FetchError.badResponse
         }
         
         // decode data
+        /*
+         Quote.self is used instead of Quote because Quote alone would be taken for a type.  You want the thing version of the type, which is what adding the .self implies
+         */
+        let quote = try JSONDecoder().decode(Quote.self, from: data)
         
         //return quote
+        return quote
     }
+    
+    
+    func fetchCharacter(_ name: String) async throws -> Char {
+        // Build fetch url
+        let characterURL = baseUrl.appending(path: "characters")
+        let fetchURL = characterURL.appending(queryItems: [URLQueryItem(name:"name", value: name)])
+        
+        // try to fetch data from url
+        let (data, response) = try await URLSession.shared.data(from: fetchURL)
+        
+        // handle response
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            throw FetchError.badResponse
+        }
+        
+        // decode data
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        let characters = try decoder.decode([Char].self, from: data)
+        
+        //return quote
+        return characters[0]
+    }
+    
+    
+    func fetchDeath(for character: String) async throws -> Death? {
+        let fetchURL = baseUrl.appending(path: "deaths")
+        
+        let (data, response) = try await URLSession.shared.data(from: fetchURL)
+        
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            throw FetchError.badResponse
+        }
+        
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
+        let deaths = try decoder.decode([Death].self, from: data)
+        
+        for death in deaths {
+            if death.character == character {
+                return death
+            }
+        }
+        return nil
+    }
+    
 }
