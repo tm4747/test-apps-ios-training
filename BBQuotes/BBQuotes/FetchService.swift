@@ -7,15 +7,22 @@
 
 import Foundation
 
+/*
+ This could alternately be called FetchController.  In MVC, this would be a controller, which essentially controls all the fetching.
+ ViewModel - this would be a file which essentially models the available data for a view.  (mvc pattern vs MvmV pattern - Model - ViewModel - View)
+ Access control - which of these things do we need to access from outside the struct?  If not, make things private.
+ 
+ */
+
 struct FetchService {
-    enum FetchError: Error {
+    private enum FetchError: Error {
         case badResponse
     }
     
     // Here you need the ! because the URL type is optional by default, BUT you can't really use the URL type if it is optional (lol).  Not sure what the purpose of all this is - perhaps it has to do with when you're pulling the URL dynamically and maybe no or a wrong value will be pulled?
     //  -  alternately, you could coalesce by adding a default in case nil is passed.  In the following case the url is hardcoded so we don't need to worry about nil being assigned
     //  -  essentially, force unwrap if you know there's going to be a value (!).  coalesce if the value is being passed and there is a change it will be nil (such as being pulled via api)
-    let baseUrl = URL(string: "https://breaking-bad-api-six.vercel.app/api")!
+    private let baseUrl = URL(string: "https://breaking-bad-api-six.vercel.app/api")!
     
     func fetchQuote(from show: String) async throws -> Quote {
         // Build fetch url
