@@ -80,9 +80,9 @@ struct QuoteView: View {
                             .font(.title)
                             .foregroundStyle(.white)
                             .padding()
-                            .background(.breakingBadGreen.opacity(0.75))
+                            .background(Color("\(show.replacingOccurrences(of: " ", with: ""))Button").opacity(0.75))
                             .clipShape(.rect(cornerRadius:10))
-                            .shadow(color: .breakingBadYellow, radius: 5)
+                            .shadow(color: Color("\(show.replacingOccurrences(of: " ", with: ""))Shadow"), radius: 5)
                     }
                     
                     Spacer(minLength: 95)
@@ -97,6 +97,7 @@ struct QuoteView: View {
 }
 
 #Preview {
-    QuoteView(show: "Breaking Bad")
+//    QuoteView(show: "Breaking Bad")
+    QuoteView(show: "Better Call Saul")
         .preferredColorScheme(.dark)
 }
