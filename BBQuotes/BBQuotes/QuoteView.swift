@@ -14,6 +14,8 @@ struct QuoteView: View {
     // I don't know why this isn't var since it will be changing, no?
     let show: String
     
+    @State var showCharacterInfo = false
+    
     var body: some View {
         GeometryReader { geo in
             ZStack {
@@ -29,8 +31,10 @@ struct QuoteView: View {
                         switch vm.status {
                         case .notStarted:
                             EmptyView()
+                            
                         case .fetching:
                             ProgressView()
+                            
                         case .success:
                             Text("\"\(vm.quote.quote)\"")
                                 // will scale down as much as 50% to make room for excessive text
@@ -61,15 +65,17 @@ struct QuoteView: View {
                             }
                             .frame(width: geo.size.width/1.1, height: geo.size.height/1.8)
                             .clipShape(.rect(cornerRadius: 50))
+                            .onTapGesture {
+                                showCharacterInfo.toggle()
+                            }
+                            
                         case .failed(let error):
                             Text(error.localizedDescription)
                         }
                                                 
                         Spacer()
                     }
-                    
-                    
-                    
+                                        
                     Button {
                         // allows a unit of asyncronous work to run in syncronous environments
                         Task {
@@ -93,6 +99,9 @@ struct QuoteView: View {
             .frame(width: geo.size.width, height: geo.size.height)
         }
         .ignoresSafeArea()
+        .sheet(isPresented: $showCharacterInfo) {
+            CharacterView(character: vm.character, show: show)
+        }
     }
 }
 
