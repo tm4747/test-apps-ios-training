@@ -18,6 +18,10 @@ struct ContentView: View {
                 QuoteView(show: "Better Call Saul")
                     .toolbarBackgroundVisibility(.visible, for: .tabBar)
             }
+            Tab("El Camino", systemImage: "car") {
+                QuoteView(show: "El Camino")
+                    .toolbarBackgroundVisibility(.visible, for: .tabBar)
+            }
             Tab("Care Bears", systemImage: "heart") {
                 QuoteView(show: "Care Bears")
                     .toolbarBackgroundVisibility(.visible, for: .tabBar)
