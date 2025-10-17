@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct QuoteView: View {
+struct FetchView: View {
     
     // give us access to properties and methods of ViewModel
     let vm = ViewModel()
@@ -35,7 +35,7 @@ struct QuoteView: View {
                         case .fetching:
                             ProgressView()
                             
-                        case .success:
+                        case .successQuote:
                             Text("\"\(vm.quote.quote)\"")
                                 // will scale down as much as 50% to make room for excessive text
                                 .minimumScaleFactor(0.5)
@@ -69,27 +69,50 @@ struct QuoteView: View {
                                 showCharacterInfo.toggle()
                             }
                             
+                        case .successEpisode:
+                            EpisodeView()
+                            
                         case .failed(let error):
                             Text(error.localizedDescription)
                         }
                                                 
                         Spacer()
                     }
-                                        
-                    Button {
-                        // allows a unit of asyncronous work to run in syncronous environments
-                        Task {
-                            await vm.getData(for: show)
+                            
+                    HStack {
+                        Button {
+                            // allows a unit of asyncronous work to run in syncronous environments
+                            Task {
+                                await vm.getQuoteData(for: show)
+                            }
+                        } label: {
+                            Text("Get Random Quote")
+                                .font(.title3)
+                                .foregroundStyle(.white)
+                                .padding()
+                                .background(Color("\(show.removeSpaces())Button").opacity(0.75))
+                                .clipShape(.rect(cornerRadius:10))
+                                .shadow(color: Color("\(show.removeSpaces())Shadow"), radius: 5)
                         }
-                    } label: {
-                        Text("Get Random Quote")
-                            .font(.title)
-                            .foregroundStyle(.white)
-                            .padding()
-                            .background(Color("\(show.removeSpaces())Button").opacity(0.75))
-                            .clipShape(.rect(cornerRadius:10))
-                            .shadow(color: Color("\(show.removeSpaces())Shadow"), radius: 5)
+                        
+                        Spacer()
+                        
+                        Button {
+                            // allows a unit of asyncronous work to run in syncronous environments
+                            Task {
+                                await vm.getEpisode(for: show)
+                            }
+                        } label: {
+                            Text("Get Random Episode")
+                                .font(.title3)
+                                .foregroundStyle(.white)
+                                .padding()
+                                .background(Color("\(show.removeSpaces())Button").opacity(0.75))
+                                .clipShape(.rect(cornerRadius:10))
+                                .shadow(color: Color("\(show.removeSpaces())Shadow"), radius: 5)
+                        }
                     }
+                    .padding(.horizontal, 13)
                     
                     Spacer(minLength: 95)
                     
@@ -108,6 +131,6 @@ struct QuoteView: View {
 
 #Preview {
 //    QuoteView(show: Constants.bbName)
-    QuoteView(show: Constants.bcsName)
+    FetchView(show: Constants.bcsName)
         .preferredColorScheme(.dark)
 }
