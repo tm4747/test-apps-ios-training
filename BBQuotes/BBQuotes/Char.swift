@@ -16,6 +16,8 @@ struct Char: Decodable {
     let aliases: [String]
     let status: String
     let portrayedBy: String
+    let productions: [String]
+    var randomImage: URL?
     // adding ? after TYPE indicates an optional property.  It will be set to nil if no value assigned
     // USAGE - Text(death ?? "unknown") - this will show the value set to death unless it's = nil, in which case "unknown" will be displayed
     //  - another way -> if death != nil { // display text }
@@ -32,21 +34,31 @@ struct Char: Decodable {
         case birthday
         case occupations
         case images
+        case randomImage
         case aliases
         case status
         case portrayedBy
+        case productions
         case death
     }
     
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        let theseImages = try container.decode([URL].self, forKey: .images)
         self.name = try container.decode(String.self, forKey: .name)
         self.birthday = try container.decode(String.self, forKey: .birthday)
         self.occupations = try container.decode([String].self, forKey: .occupations)
-        self.images = try container.decode([URL].self, forKey: .images)
+        self.images = theseImages
         self.aliases = try container.decode([String].self, forKey: .aliases)
         self.status = try container.decode(String.self, forKey: .status)
         self.portrayedBy = try container.decode(String.self, forKey: .portrayedBy)
+        self.productions = try container.decode([String].self, forKey: .productions)
+        
+        if let randomURL = theseImages.randomElement() {
+            self.randomImage = randomURL
+        } else {
+            self.randomImage = nil
+        }
         
         // GET and decode the death data
         let deathDecoder = JSONDecoder()
@@ -54,6 +66,7 @@ struct Char: Decodable {
         
         let deathData = try Data(contentsOf: Bundle.main.url(forResource:
                                                                 "sampledeath", withExtension: "json")!)
+        // self. not needed I think because there is no ambiguity as to what this death variable might be.  Might also be because it is optional?
         death = try deathDecoder.decode(Death.self, from: deathData)
     }
 }

@@ -75,6 +75,47 @@ struct FetchService {
         return characters[0]
     }
     
+    // TODO: build out - will need to confirm we're returning a Char not [Char].  Also, will have to keep fetching data until we get one matching hte show
+    func fetchRandomCharacter(from show: String) async throws -> Char {
+        var characterFromShowFound = false
+        var foundCharacter: Char? = nil
+        
+        // Build fetch url
+        let fetchURL = baseUrl.appending(path: "characters/random")
+        
+        while !characterFromShowFound {
+            // try to fetch data
+            let (data, response) = try await URLSession.shared.data(from: fetchURL)
+            
+            // check response
+            guard let httpResponse = response as? HTTPURLResponse,
+                httpResponse.statusCode == 200 else {
+                    throw FetchError.badResponse
+                }
+            
+            // decode json data into Char
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            let character = try decoder.decode(Char.self, from: data)
+            
+            // if String array character.productions contains show, set characterFromShowFound to true
+            if character.productions.contains(where: { $0.caseInsensitiveCompare(show) == .orderedSame }) {
+                characterFromShowFound = true
+                foundCharacter = character
+            }
+            
+            // Optional: add small delay to avoid hammering the API
+            try await Task.sleep(nanoseconds: 200_000_000) // 0.2s
+        }
+
+        //return quote
+        guard let foundCharacter else {
+            throw FetchError.badResponse
+        }
+            
+        return foundCharacter
+    }
+    
     
     func fetchDeath(for character: String) async throws -> Death? {
         let fetchURL = baseUrl.appending(path: "deaths")

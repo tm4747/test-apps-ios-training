@@ -11,6 +11,7 @@ struct FetchView: View {
     
     // give us access to properties and methods of ViewModel
     let vm = ViewModel()
+   
     // I don't know why this isn't var since it will be changing, no?
     let show: String
     
@@ -47,7 +48,7 @@ struct FetchView: View {
                                 .padding(.horizontal)
                             
                             ZStack(alignment: .bottom) {
-                                AsyncImage(url: vm.character.images[0]) { image in
+                                AsyncImage(url: vm.character.randomImage) { image in
                                     image
                                         .resizable()
                                         .scaledToFill()
@@ -71,6 +72,30 @@ struct FetchView: View {
                             
                         case .successEpisode:
                             EpisodeView(episode: vm.episode)
+                        
+                        case .successCharacter:
+                            ZStack(alignment: .bottom) {
+                                AsyncImage(url: vm.character.randomImage) { image in
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                } placeholder: {
+                                    ProgressView()
+                                }
+                                .frame(width: geo.size.width/1.1, height: geo.size.height/1.8)
+                                
+                                Text(vm.character.name)
+                                    .foregroundStyle(.white)
+                                    .padding(10)
+                                    .frame(maxWidth: .infinity)
+                                    .background(.ultraThinMaterial)
+                                    .fontWeight(.bold)
+                            }
+                            .frame(width: geo.size.width/1.1, height: geo.size.height/1.8)
+                            .clipShape(.rect(cornerRadius: 50))
+                            .onTapGesture {
+                                showCharacterInfo.toggle()
+                            }
                             
                         case .failed(let error):
                             Text(error.localizedDescription)
@@ -86,9 +111,9 @@ struct FetchView: View {
                                 await vm.getQuoteData(for: show)
                             }
                         } label: {
-                            Text("Get Random Quote")
-                                .font(.title3)
+                            Text("Get \nRandom \nQuote")
                                 .foregroundStyle(.white)
+                                .fontWeight(.bold)
                                 .padding()
                                 .background(Color("\(show.removeSpaces())Button").opacity(0.75))
                                 .clipShape(.rect(cornerRadius:10))
@@ -103,9 +128,26 @@ struct FetchView: View {
                                 await vm.getEpisode(for: show)
                             }
                         } label: {
-                            Text("Get Random Episode")
-                                .font(.title3)
+                            Text("Get \nRandom \nEpisode")
                                 .foregroundStyle(.white)
+                                .fontWeight(.bold)
+                                .padding()
+                                .background(Color("\(show.removeSpaces())Button").opacity(0.75))
+                                .clipShape(.rect(cornerRadius:10))
+                                .shadow(color: Color("\(show.removeSpaces())Shadow"), radius: 5)
+                        }
+                        
+                        Spacer()
+                        
+                        Button {
+                            // allows a unit of asyncronous work to run in syncronous environments
+                            Task {
+                                await vm.getRandomCharacterData(for: show)
+                            }
+                        } label: {
+                            Text("Get \nRandom \nCharacter")
+                                .foregroundStyle(.white)
+                                .fontWeight(.bold)
                                 .padding()
                                 .background(Color("\(show.removeSpaces())Button").opacity(0.75))
                                 .clipShape(.rect(cornerRadius:10))
@@ -125,6 +167,9 @@ struct FetchView: View {
         .toolbarBackgroundVisibility(.visible, for: .tabBar)
         .sheet(isPresented: $showCharacterInfo) {
             CharacterView(character: vm.character, show: show)
+        }
+        .task {
+            await vm.getQuoteData(for: show)
         }
     }
 }
