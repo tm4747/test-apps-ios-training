@@ -57,7 +57,7 @@ struct FetchView: View {
                                 }
                                 .frame(width: geo.size.width/1.1, height: geo.size.height/1.8)
                                 
-                                Text(vm.quote.character)
+                                Text(vm.character.name)
                                     .foregroundStyle(.white)
                                     .padding(10)
                                     .frame(maxWidth: .infinity)
@@ -105,53 +105,20 @@ struct FetchView: View {
                     }
                             
                     HStack {
-                        Button {
-                            // allows a unit of asyncronous work to run in syncronous environments
-                            Task {
-                                await vm.getQuoteData(for: show)
-                            }
-                        } label: {
-                            Text("Get \nRandom \nQuote")
-                                .foregroundStyle(.white)
-                                .fontWeight(.bold)
-                                .padding()
-                                .background(Color("\(show.removeSpaces())Button").opacity(0.75))
-                                .clipShape(.rect(cornerRadius:10))
-                                .shadow(color: Color("\(show.removeSpaces())Shadow"), radius: 5)
+                        FetchButton(title: "Get \nRandom \nQuote", colorBaseName: show.removeSpaces()) {
+                            await vm.getQuoteData(for: show)
                         }
                         
                         Spacer()
                         
-                        Button {
-                            // allows a unit of asyncronous work to run in syncronous environments
-                            Task {
-                                await vm.getEpisode(for: show)
-                            }
-                        } label: {
-                            Text("Get \nRandom \nEpisode")
-                                .foregroundStyle(.white)
-                                .fontWeight(.bold)
-                                .padding()
-                                .background(Color("\(show.removeSpaces())Button").opacity(0.75))
-                                .clipShape(.rect(cornerRadius:10))
-                                .shadow(color: Color("\(show.removeSpaces())Shadow"), radius: 5)
+                        FetchButton(title: "Get \nRandom \nEpisode", colorBaseName: show.removeSpaces()) {
+                            await vm.getEpisode(for: show)
                         }
                         
                         Spacer()
                         
-                        Button {
-                            // allows a unit of asyncronous work to run in syncronous environments
-                            Task {
-                                await vm.getRandomCharacterData(for: show)
-                            }
-                        } label: {
-                            Text("Get \nRandom \nCharacter")
-                                .foregroundStyle(.white)
-                                .fontWeight(.bold)
-                                .padding()
-                                .background(Color("\(show.removeSpaces())Button").opacity(0.75))
-                                .clipShape(.rect(cornerRadius:10))
-                                .shadow(color: Color("\(show.removeSpaces())Shadow"), radius: 5)
+                        FetchButton(title: "Get \nRandom \nCharacter", colorBaseName: show.removeSpaces()) {
+                            await vm.getRandomCharacterData(for: show)
                         }
                     }
                     .padding(.horizontal, 30)
@@ -178,4 +145,27 @@ struct FetchView: View {
 //    QuoteView(show: Constants.bbName)
     FetchView(show: Constants.bcsName)
         .preferredColorScheme(.dark)
+}
+
+struct FetchButton: View {
+    let title: String
+    let colorBaseName: String
+    let action: () async -> Void   // async closure so you can call async ViewModel methods
+
+    var body: some View {
+        Button {
+            Task {
+                await action()
+            }
+        } label: {
+            Text(title)
+                .foregroundStyle(.white)
+                .fontWeight(.bold)
+                .multilineTextAlignment(.center)
+                .padding()
+                .background(Color("\(colorBaseName)Button").opacity(0.75))
+                .clipShape(.rect(cornerRadius: 10))
+                .shadow(color: Color("\(colorBaseName)Shadow"), radius: 5)
+        }
+    }
 }
