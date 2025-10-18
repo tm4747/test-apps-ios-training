@@ -47,55 +47,15 @@ struct FetchView: View {
                                 .clipShape(.rect(cornerRadius:25))
                                 .padding(.horizontal)
                             
-                            ZStack(alignment: .bottom) {
-                                AsyncImage(url: vm.character.randomImage) { image in
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
-                                } placeholder: {
-                                    ProgressView()
-                                }
-                                .frame(width: geo.size.width/1.1, height: geo.size.height/1.8)
-                                
-                                Text(vm.character.name)
-                                    .foregroundStyle(.white)
-                                    .padding(10)
-                                    .frame(maxWidth: .infinity)
-                                    .background(.ultraThinMaterial)
-                                    .fontWeight(.bold)
-                            }
-                            .frame(width: geo.size.width/1.1, height: geo.size.height/1.8)
-                            .clipShape(.rect(cornerRadius: 50))
-                            .onTapGesture {
-                                showCharacterInfo.toggle()
-                            }
+                            CharacterCard(vm: vm, width: geo.size.width,
+                                          height: geo.size.height, showCharacterInfo: $showCharacterInfo)
                             
                         case .successEpisode:
                             EpisodeView(episode: vm.episode)
                         
                         case .successCharacter:
-                            ZStack(alignment: .bottom) {
-                                AsyncImage(url: vm.character.randomImage) { image in
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
-                                } placeholder: {
-                                    ProgressView()
-                                }
-                                .frame(width: geo.size.width/1.1, height: geo.size.height/1.8)
-                                
-                                Text(vm.character.name)
-                                    .foregroundStyle(.white)
-                                    .padding(10)
-                                    .frame(maxWidth: .infinity)
-                                    .background(.ultraThinMaterial)
-                                    .fontWeight(.bold)
-                            }
-                            .frame(width: geo.size.width/1.1, height: geo.size.height/1.8)
-                            .clipShape(.rect(cornerRadius: 50))
-                            .onTapGesture {
-                                showCharacterInfo.toggle()
-                            }
+                            CharacterCard(vm: vm, width: geo.size.width,
+                                          height: geo.size.height, showCharacterInfo: $showCharacterInfo)
                             
                         case .failed(let error):
                             Text(error.localizedDescription)
@@ -166,6 +126,38 @@ struct FetchButton: View {
                 .background(Color("\(colorBaseName)Button").opacity(0.75))
                 .clipShape(.rect(cornerRadius: 10))
                 .shadow(color: Color("\(colorBaseName)Shadow"), radius: 5)
+        }
+    }
+}
+
+struct CharacterCard: View {
+    let vm: ViewModel
+    let width: CGFloat
+    let height: CGFloat
+    @Binding var showCharacterInfo: Bool
+    
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            AsyncImage(url: vm.character.randomImage) { image in
+                image
+                    .resizable()
+                    .scaledToFill()
+            } placeholder: {
+                ProgressView()
+            }
+            .frame(width: width/1.1, height: height/1.8)
+            
+            Text(vm.character.name)
+                .foregroundStyle(.white)
+                .padding(10)
+                .frame(maxWidth: .infinity)
+                .background(.ultraThinMaterial)
+                .fontWeight(.bold)
+        }
+        .frame(width: width/1.1, height: height/1.8)
+        .clipShape(.rect(cornerRadius: 50))
+        .onTapGesture {
+            showCharacterInfo.toggle()
         }
     }
 }
