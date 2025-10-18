@@ -70,13 +70,13 @@ struct FetchView: View {
                             }
                             
                         case .successEpisode:
-                            EpisodeView()
+                            EpisodeView(episode: vm.episode)
                             
                         case .failed(let error):
                             Text(error.localizedDescription)
                         }
                                                 
-                        Spacer()
+                        Spacer(minLength:20)
                     }
                             
                     HStack {
@@ -112,7 +112,7 @@ struct FetchView: View {
                                 .shadow(color: Color("\(show.removeSpaces())Shadow"), radius: 5)
                         }
                     }
-                    .padding(.horizontal, 13)
+                    .padding(.horizontal, 30)
                     
                     Spacer(minLength: 95)
                     
