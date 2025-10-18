@@ -93,7 +93,7 @@ struct FetchView: View {
         .ignoresSafeArea()
         .toolbarBackgroundVisibility(.visible, for: .tabBar)
         .sheet(isPresented: $showCharacterInfo) {
-            CharacterView(character: vm.character, show: show)
+            CharacterView(character: vm.character, quote: "test quotes", show: show)
         }
         .task {
             await vm.getQuoteData(for: show)

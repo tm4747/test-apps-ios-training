@@ -79,9 +79,7 @@ class ViewModel {
             status = .failed(error: error)
         }
     }
-    /*
-     TODO: fill out this function
-     */
+
     func getRandomCharacterData(for show: String) async {
         status = .fetching
         

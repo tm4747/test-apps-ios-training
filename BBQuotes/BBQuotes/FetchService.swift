@@ -11,7 +11,6 @@ import Foundation
  This could alternately be called FetchController.  In MVC, this would be a controller, which essentially controls all the fetching.
  ViewModel - this would be a file which essentially models the available data for a view.  (mvc pattern vs MvmV pattern - Model - ViewModel - View)
  Access control - which of these things do we need to access from outside the struct?  If not, make things private.
- 
  */
 
 struct FetchService {

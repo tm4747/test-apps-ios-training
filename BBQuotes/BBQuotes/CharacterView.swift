@@ -9,8 +9,8 @@ import SwiftUI
 
 struct CharacterView: View {
     let character: Char
+    let quote: String
     let show: String
-    
     
     var body: some View {
         GeometryReader { geo in
@@ -43,6 +43,10 @@ struct CharacterView: View {
                                 .font(.largeTitle)
                             
                             Text("Portrayed By: \(character.portrayedBy)")
+                                .font(.subheadline)
+                            
+                            
+                            Text("Random Quote: \(quote)")
                                 .font(.subheadline)
                             Divider()
                             Text("\(character.name) Character Info")
@@ -108,5 +112,5 @@ struct CharacterView: View {
 }
 
 #Preview {
-    CharacterView(character: ViewModel().character, show: Constants.bbName)
+    CharacterView(character: ViewModel().character, quote: "test", show: Constants.bbName)
 }

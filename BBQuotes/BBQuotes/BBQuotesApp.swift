@@ -25,11 +25,13 @@ struct BBQuotesApp: App {
     2. make sure the character is in the currently selected show (productions property)
     3. if not, fetch again and repeat until the character IS in currently selected production
     4. show character data in an existing or new view
- - componentize buttons in FetchView
- - in character view -> add a place to show a random quote.
+ ✅   componentize buttons in FetchView
+ /// HERE
+ - in character view -> add a place to show a random quote DONE
+    - need to hook up quote to actual quote object pulled
     - also add button to pull another random quote
     - baseUrl/quotes/random?character=Walter+White
- - Sometimes fetch a simpson's quote (20%)
+ - Hook up simpsons api to CareBears
     - thesimpsonsquoteapi.glitch.me ->  /quotes
  */
 
